@@ -31,7 +31,7 @@ func getLinesFromFile(filePath string) []string {
 	return lines
 }
 
-func getPuzzleFromLines(lines []string) [][]int {
+func getPuzzleFromLines(lines []string) ([][]int, int) {
 	var (
 		err        error
 		currentRow int = 0
@@ -80,7 +80,7 @@ func getPuzzleFromLines(lines []string) [][]int {
 		currentRow++
 	}
 
-	return puzzle
+	return puzzle, puzzleSize
 }
 
 func main() {
@@ -88,6 +88,7 @@ func main() {
 
 	lines := getLinesFromFile(fileName)
 	fmt.Println("'" + strings.Join(lines, `','`) + `'`)
-	puzzle := getPuzzleFromLines(lines)
+	puzzle, puzzleSize := getPuzzleFromLines(lines)
 	fmt.Println(puzzle)
+	fmt.Println(puzzleSize)
 }
