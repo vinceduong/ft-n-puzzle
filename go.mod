@@ -1,3 +1,3 @@
-module github.com/vinceduong/n-puzzle/src
+module n-puzzle
 
 go 1.16
