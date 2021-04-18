@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"./parse"
+	"github.com/vinceduong/n-puzzle/src/parse"
 )
 
 func main() {
