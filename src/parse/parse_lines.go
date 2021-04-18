@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -17,7 +18,13 @@ func GetPuzzleFromLines(lines []string) ([][]int, int) {
 
 	for _, line := range lines {
 		fmt.Printf("\nLine: \"%v\"\n", line)
-		if len(line) == 0 || line[0] == '#' {
+
+		if len(line) == 0 {
+			fmt.Println("Empty line")
+			continue
+		}
+
+		if line[0] == '#' {
 			fmt.Println("Comment")
 			continue
 		}
@@ -39,7 +46,10 @@ func GetPuzzleFromLines(lines []string) ([][]int, int) {
 		}
 
 		fmt.Printf("Current Row: %d\n", currentRow)
-		numbers := strings.Split(line, " ")
+		space := regexp.MustCompile(`\s+`)
+		clearedLine := space.ReplaceAllString(strings.TrimSpace(line), " ")
+		numbers := strings.Split(clearedLine, " ")
+
 		for i, stringNumber := range numbers {
 
 			if i == puzzleSize {
