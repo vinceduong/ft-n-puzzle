@@ -14,7 +14,12 @@ type Node struct {
 	cost, heuristic, score int
 }
 
-func getSolvedPuzzle(puzzleSize int) [][]int {
+type Position struct {
+	row    int
+	column int
+}
+
+func getSolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 	puzzle := make([][]int, puzzleSize)
 	for i := range puzzle {
 		puzzle[i] = make([]int, puzzleSize)
@@ -33,12 +38,16 @@ func getSolvedPuzzle(puzzleSize int) [][]int {
 		incrementingAxis = "column"
 	)
 
+	piecePositions := make(map[int]Position)
+
 	for pieceNumber <= numberOfPieces {
 		if pieceNumber != numberOfPieces {
 			puzzle[row][column] = pieceNumber
+			piecePositions[pieceNumber] = Position{row, column}
 			pieceNumber++
 		} else {
 			puzzle[row][column] = 0
+			piecePositions[pieceNumber] = Position{row, column}
 			pieceNumber++
 
 			continue
@@ -75,16 +84,8 @@ func getSolvedPuzzle(puzzleSize int) [][]int {
 		}
 	}
 
-	return puzzle
+	return puzzle, piecePositions
 }
-
-// func getPuzzleHeuristic(puzzle [][]int) int {
-
-// }
-
-// func createNode(puzzle [][]int, cost int) Node {
-
-// }
 
 func main() {
 	if len(os.Args) == 1 {
@@ -96,6 +97,7 @@ func main() {
 	fmt.Println("'" + strings.Join(lines, `','`) + `'`)
 	puzzle, puzzleSize := parse.GetPuzzleFromLines(lines)
 	fmt.Printf("Puzzle: %#v\n", puzzle)
-	solvedPuzzle := getSolvedPuzzle(puzzleSize)
+	solvedPuzzle, piecePositions := getSolvedPuzzle(puzzleSize)
 	fmt.Printf("Solved Puzzle: %#v\n", solvedPuzzle)
+	fmt.Printf("piecePositions: %#v\n", piecePositions)
 }
