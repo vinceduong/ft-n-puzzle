@@ -47,7 +47,7 @@ func getSolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 			pieceNumber++
 		} else {
 			puzzle[row][column] = 0
-			piecePositions[pieceNumber] = Position{row, column}
+			piecePositions[0] = Position{row, column}
 			pieceNumber++
 
 			continue
@@ -87,6 +87,30 @@ func getSolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 	return puzzle, piecePositions
 }
 
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func manhattanDistance(row int, column int, pos Position) int {
+	return Abs(row-pos.row) + Abs(column-pos.column)
+}
+
+func heuristic(puzzle [][]int, solvedPiecePositions map[int]Position) int {
+	heuristic := 0
+
+	for i := range puzzle {
+		for j, pieceNumber := range puzzle[i] {
+			distance := manhattanDistance(i, j, solvedPiecePositions[pieceNumber])
+			heuristic += distance
+		}
+	}
+
+	return heuristic
+}
+
 func main() {
 	if len(os.Args) == 1 {
 		log.Fatal("No file provided")
@@ -99,5 +123,5 @@ func main() {
 	fmt.Printf("Puzzle: %#v\n", puzzle)
 	solvedPuzzle, piecePositions := getSolvedPuzzle(puzzleSize)
 	fmt.Printf("Solved Puzzle: %#v\n", solvedPuzzle)
-	fmt.Printf("piecePositions: %#v\n", piecePositions)
+	fmt.Printf("Heuristic: %v\n", heuristic(solvedPuzzle, piecePositions))
 }
