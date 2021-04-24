@@ -21,7 +21,7 @@ type Position struct {
 	column int
 }
 
-func getSolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
+func SolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 	puzzle := make([][]int, puzzleSize)
 	for i := range puzzle {
 		puzzle[i] = make([]int, puzzleSize)
@@ -147,7 +147,7 @@ func potentialZeroPositions(zeroPosition Position, puzzleSize int) []Position {
 	return positions
 }
 
-func getZeroPosition(puzzle [][]int) Position {
+func ZeroPosition(puzzle [][]int) Position {
 	for i := range puzzle {
 		for j, pieceNumber := range puzzle[i] {
 			if pieceNumber == 0 {
@@ -165,15 +165,15 @@ func main() {
 	}
 	fileName := os.Args[1]
 
-	lines := parse.GetLinesFromFile(fileName)
+	lines := parse.LinesFromFile(fileName)
 	fmt.Println("'" + strings.Join(lines, `','`) + `'`)
-	puzzle, puzzleSize := parse.GetPuzzleFromLines(lines)
-	zeroPosition := getZeroPosition(puzzle)
+	puzzle, puzzleSize := parse.PuzzleFromLines(lines)
+	zeroPosition := ZeroPosition(puzzle)
 
 	fmt.Printf("Puzzle: %v\n\n", puzzle)
 	fmt.Printf("Zero position: %v\n\n", zeroPosition)
 
-	solvedPuzzle, piecePositions := getSolvedPuzzle(puzzleSize)
+	solvedPuzzle, piecePositions := SolvedPuzzle(puzzleSize)
 	fmt.Printf("Solved Puzzle: %v\n\n", solvedPuzzle)
 	fmt.Printf("Heuristic: %v\n\n", heuristic(solvedPuzzle, piecePositions))
 	fmt.Printf("Neighboors: %v\n", potentialZeroPositions(zeroPosition, puzzleSize))

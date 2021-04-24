@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func GetLinesFromFile(filePath string) []string {
+func LinesFromFile(filePath string) []string {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)

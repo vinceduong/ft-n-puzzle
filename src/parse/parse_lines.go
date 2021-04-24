@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func GetPuzzleFromLines(lines []string) ([][]int, int) {
+func PuzzleFromLines(lines []string) ([][]int, int) {
 	var (
 		err        error
 		currentRow int = 0
