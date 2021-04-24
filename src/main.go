@@ -12,6 +12,8 @@ import (
 type Node struct {
 	puzzle                 [][]int
 	cost, heuristic, score int
+	zeroPosition           Position
+	parent                 *Node
 }
 
 type Position struct {
@@ -111,6 +113,52 @@ func heuristic(puzzle [][]int, solvedPiecePositions map[int]Position) int {
 	return heuristic
 }
 
+func potentialZeroPositions(zeroPosition Position, puzzleSize int) []Position {
+	var positions []Position
+
+	if zeroPosition.row > 0 {
+		positions = append(
+			positions,
+			Position{zeroPosition.row - 1, zeroPosition.column},
+		)
+	}
+
+	if zeroPosition.row < puzzleSize-1 {
+		positions = append(
+			positions,
+			Position{zeroPosition.row + 1, zeroPosition.column},
+		)
+	}
+
+	if zeroPosition.column > 0 {
+		positions = append(
+			positions,
+			Position{zeroPosition.row, zeroPosition.column - 1},
+		)
+	}
+
+	if zeroPosition.column < puzzleSize-1 {
+		positions = append(
+			positions,
+			Position{zeroPosition.row, zeroPosition.column + 1},
+		)
+	}
+
+	return positions
+}
+
+func getZeroPosition(puzzle [][]int) Position {
+	for i := range puzzle {
+		for j, pieceNumber := range puzzle[i] {
+			if pieceNumber == 0 {
+				return Position{i, j}
+			}
+		}
+	}
+
+	return Position{}
+}
+
 func main() {
 	if len(os.Args) == 1 {
 		log.Fatal("No file provided")
@@ -120,8 +168,13 @@ func main() {
 	lines := parse.GetLinesFromFile(fileName)
 	fmt.Println("'" + strings.Join(lines, `','`) + `'`)
 	puzzle, puzzleSize := parse.GetPuzzleFromLines(lines)
-	fmt.Printf("Puzzle: %#v\n", puzzle)
+	zeroPosition := getZeroPosition(puzzle)
+
+	fmt.Printf("Puzzle: %v\n\n", puzzle)
+	fmt.Printf("Zero position: %v\n\n", zeroPosition)
+
 	solvedPuzzle, piecePositions := getSolvedPuzzle(puzzleSize)
-	fmt.Printf("Solved Puzzle: %#v\n", solvedPuzzle)
-	fmt.Printf("Heuristic: %v\n", heuristic(solvedPuzzle, piecePositions))
+	fmt.Printf("Solved Puzzle: %v\n\n", solvedPuzzle)
+	fmt.Printf("Heuristic: %v\n\n", heuristic(solvedPuzzle, piecePositions))
+	fmt.Printf("Neighboors: %v\n", potentialZeroPositions(zeroPosition, puzzleSize))
 }
