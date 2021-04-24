@@ -96,16 +96,16 @@ func Abs(x int) int {
 	return x
 }
 
-func manhattanDistance(row int, column int, pos Position) int {
+func ManhattanDistance(row int, column int, pos Position) int {
 	return Abs(row-pos.row) + Abs(column-pos.column)
 }
 
-func heuristic(puzzle [][]int, solvedPiecePositions map[int]Position) int {
+func Heuristic(puzzle [][]int, solvedPiecePositions map[int]Position) int {
 	heuristic := 0
 
 	for i := range puzzle {
 		for j, pieceNumber := range puzzle[i] {
-			distance := manhattanDistance(i, j, solvedPiecePositions[pieceNumber])
+			distance := ManhattanDistance(i, j, solvedPiecePositions[pieceNumber])
 			heuristic += distance
 		}
 	}
@@ -113,7 +113,7 @@ func heuristic(puzzle [][]int, solvedPiecePositions map[int]Position) int {
 	return heuristic
 }
 
-func potentialZeroPositions(zeroPosition Position, puzzleSize int) []Position {
+func PotentialZeroPositions(zeroPosition Position, puzzleSize int) []Position {
 	var positions []Position
 
 	if zeroPosition.row > 0 {
@@ -159,6 +159,25 @@ func ZeroPosition(puzzle [][]int) Position {
 	return Position{}
 }
 
+func CopyPuzzle(puzzle [][]int) [][]int {
+	puzzleCopy := make([][]int, len(puzzle))
+	for i := range puzzle {
+		puzzleCopy[i] = make([]int, len(puzzle[i]))
+		copy(puzzleCopy[i], puzzle[i])
+	}
+
+	return puzzleCopy
+}
+func SwapPuzzlePieces(puzzle [][]int, p1 Position, p2 Position) [][]int {
+	newPuzzle := CopyPuzzle(puzzle)
+
+	tmp := newPuzzle[p1.row][p1.column]
+	newPuzzle[p1.row][p1.column] = newPuzzle[p2.row][p2.column]
+	newPuzzle[p2.row][p2.column] = tmp
+
+	return newPuzzle
+}
+
 func main() {
 	if len(os.Args) == 1 {
 		log.Fatal("No file provided")
@@ -175,6 +194,9 @@ func main() {
 
 	solvedPuzzle, piecePositions := SolvedPuzzle(puzzleSize)
 	fmt.Printf("Solved Puzzle: %v\n\n", solvedPuzzle)
-	fmt.Printf("Heuristic: %v\n\n", heuristic(solvedPuzzle, piecePositions))
-	fmt.Printf("Neighboors: %v\n", potentialZeroPositions(zeroPosition, puzzleSize))
+	fmt.Printf("Heuristic: %v\n\n", Heuristic(solvedPuzzle, piecePositions))
+	fmt.Printf("New Puzzle: %v\n", PotentialZeroPositions(zeroPosition, puzzleSize))
+	fmt.Printf("Old Puzzle: %v\n", puzzle)
+	fmt.Printf("New Puzzle: %v\n", SwapPuzzlePieces(puzzle, zeroPosition, PotentialZeroPositions(zeroPosition, puzzleSize)[0]))
+	fmt.Printf("Old Puzzle: %v\n", puzzle)
 }
