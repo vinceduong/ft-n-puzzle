@@ -10,10 +10,10 @@ import (
 )
 
 type Node struct {
-	puzzle                 [][]int
-	cost, heuristic, score int
-	zeroPosition           Position
-	parent                 *Node
+	puzzle          [][]int
+	cost, heuristic int
+	zeroPosition    Position
+	parent          *Node
 }
 
 type Position struct {
@@ -188,7 +188,6 @@ func prettyNode(node Node) {
 
 	fmt.Printf("Node cost: %v\n", node.cost)
 	fmt.Printf("Node heuristic: %v\n", node.heuristic)
-	fmt.Printf("Node score: %v\n", node.score)
 	fmt.Printf("Node parent: %v\n", node.parent)
 	fmt.Printf("-------------------------------------\n")
 }
@@ -206,13 +205,12 @@ func Neighbors(node *Node, solvedPiecePositions map[int]Position) []Node {
 
 	for i, position := range potentialZeroPositions {
 		newPuzzle := SwapPuzzlePieces(node.puzzle, node.zeroPosition, position)
-		heuristic := Heuristic(newPuzzle, solvedPiecePositions)
 		cost := node.cost + 1
-		score := heuristic + cost
+		heuristic := Heuristic(newPuzzle, solvedPiecePositions) + cost
 
 		neighbors[i] = Node{
 			newPuzzle,
-			cost, heuristic, score,
+			cost, heuristic,
 			position,
 			node,
 		}
@@ -245,7 +243,7 @@ func main() {
 
 	rootNode := Node{
 		puzzle,
-		0, Heuristic(puzzle, piecePositions), Heuristic(puzzle, piecePositions),
+		0, Heuristic(puzzle, piecePositions),
 		zeroPosition,
 		nil,
 	}
