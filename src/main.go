@@ -168,6 +168,7 @@ func CopyPuzzle(puzzle [][]int) [][]int {
 
 	return puzzleCopy
 }
+
 func SwapPuzzlePieces(puzzle [][]int, p1 Position, p2 Position) [][]int {
 	newPuzzle := CopyPuzzle(puzzle)
 
@@ -176,6 +177,48 @@ func SwapPuzzlePieces(puzzle [][]int, p1 Position, p2 Position) [][]int {
 	newPuzzle[p2.row][p2.column] = tmp
 
 	return newPuzzle
+}
+
+func prettyNode(node Node) {
+	fmt.Printf("Node puzzle: \n")
+
+	for i := range node.puzzle {
+		fmt.Printf("%v\n", node.puzzle[i])
+	}
+
+	fmt.Printf("Node cost: %v\n", node.cost)
+	fmt.Printf("Node heuristic: %v\n", node.heuristic)
+	fmt.Printf("Node score: %v\n", node.score)
+	fmt.Printf("Node parent: %v\n", node.parent)
+	fmt.Printf("-------------------------------------\n")
+}
+
+func prettyNodes(nodes []Node) {
+	for _, node := range nodes {
+		prettyNode(node)
+	}
+}
+
+func Neighbors(node *Node, solvedPiecePositions map[int]Position) []Node {
+	puzzleSize := len(node.puzzle)
+	potentialZeroPositions := PotentialZeroPositions(node.zeroPosition, puzzleSize)
+	neighbors := make([]Node, len(potentialZeroPositions))
+
+	for i, position := range potentialZeroPositions {
+		newPuzzle := SwapPuzzlePieces(node.puzzle, node.zeroPosition, position)
+		heuristic := Heuristic(newPuzzle, solvedPiecePositions)
+		cost := node.cost + 1
+		score := heuristic + cost
+
+		neighbors[i] = Node{
+			newPuzzle,
+			cost, heuristic, score,
+			position,
+			node,
+		}
+	}
+
+	return neighbors
 }
 
 func main() {
@@ -199,4 +242,15 @@ func main() {
 	fmt.Printf("Old Puzzle: %v\n", puzzle)
 	fmt.Printf("New Puzzle: %v\n", SwapPuzzlePieces(puzzle, zeroPosition, PotentialZeroPositions(zeroPosition, puzzleSize)[0]))
 	fmt.Printf("Old Puzzle: %v\n", puzzle)
+
+	rootNode := Node{
+		puzzle,
+		0, Heuristic(puzzle, piecePositions), Heuristic(puzzle, piecePositions),
+		zeroPosition,
+		nil,
+	}
+
+	prettyNode(rootNode)
+
+	prettyNodes(Neighbors(&rootNode, piecePositions))
 }
