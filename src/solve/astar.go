@@ -18,23 +18,18 @@ func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
 }
 
 func nodeIsWorth(closedList []*Node, openList []*Node, node *Node) bool {
-	// fmt.Println("----------CHILD NODE---------")
-	// prettyNode(node)
 	for _, n := range closedList {
 		if isSame(n.puzzle, node.puzzle) {
-			// fmt.Print("Node is not worth\n")
 			return false
 		}
 	}
 
 	for _, n := range openList {
 		if isSame(n.puzzle, node.puzzle) && n.cost <= node.cost {
-			// fmt.Print("Node is not worth\n")
 			return false
 		}
 	}
 
-	// fmt.Print("Node is worth\n")
 	return true
 }
 
