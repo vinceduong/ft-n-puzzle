@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strings"
 
 	"github.com/vinceduong/n-puzzle/src/parse"
 )
@@ -108,13 +107,24 @@ func isMissPlaced(row int, column int, pos Position) int {
 	return 0
 }
 
-func Heuristic(puzzle [][]int, solvedPiecePositions map[int]Position) int {
+func Heuristic(t string, puzzle [][]int, solvedPiecePositions map[int]Position) int {
 	heuristic := 0
+
+	var function func(row int, column int, pos Position) int
+
+	switch t {
+	case "manhattan":
+		function = ManhattanDistance
+	case "mp":
+		function = isMissPlaced
+	default:
+		function = ManhattanDistance
+	}
 
 	for i := range puzzle {
 		for j, pieceNumber := range puzzle[i] {
-			// distance := ManhattanDistance(i, j, solvedPiecePositions[pieceNumber])
-			distance := isMissPlaced(i, j, solvedPiecePositions[pieceNumber])
+			distance := function(i, j, solvedPiecePositions[pieceNumber])
+			// distance := isMissPlaced(i, j, solvedPiecePositions[pieceNumber])
 			heuristic += distance
 		}
 	}
@@ -188,7 +198,7 @@ func SwapPuzzlePieces(puzzle [][]int, p1 Position, p2 Position) [][]int {
 	return newPuzzle
 }
 
-func prettyNode(node Node) {
+func prettyNode(node *Node) {
 	fmt.Printf("Node puzzle: \n")
 
 	for i := range node.puzzle {
@@ -201,26 +211,24 @@ func prettyNode(node Node) {
 	fmt.Printf("-------------------------------------\n")
 }
 
-func prettyNodes(nodes []Node) {
+func prettyNodes(nodes []*Node) {
 	for _, node := range nodes {
 		prettyNode(node)
 	}
 }
 
-func Neighbors(node *Node, solvedPiecePositions map[int]Position) []Node {
+func Neighbors(node *Node, solvedPiecePositions map[int]Position) []*Node {
 	puzzleSize := len(node.puzzle)
 	potentialZeroPositions := PotentialZeroPositions(node.zeroPosition, puzzleSize)
-	neighbors := make([]Node, len(potentialZeroPositions))
+	neighbors := make([]*Node, len(potentialZeroPositions))
 
 	for i, position := range potentialZeroPositions {
 		newPuzzle := SwapPuzzlePieces(node.puzzle, node.zeroPosition, position)
 		cost := node.cost + 1
-		heuristic := Heuristic(newPuzzle, solvedPiecePositions)
-		score := cost + heuristic
 
-		neighbors[i] = Node{
+		neighbors[i] = &Node{
 			newPuzzle,
-			cost, heuristic, score,
+			cost, 0, 0,
 			position,
 			node,
 		}
@@ -241,7 +249,7 @@ func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
 	return true
 }
 
-func nodeIsWorth(closedList []Node, openList []Node, node Node) bool {
+func nodeIsWorth(closedList []*Node, openList []*Node, node *Node) bool {
 	// fmt.Println("----------CHILD NODE---------")
 	// prettyNode(node)
 	for _, n := range closedList {
@@ -252,7 +260,7 @@ func nodeIsWorth(closedList []Node, openList []Node, node Node) bool {
 	}
 
 	for _, n := range openList {
-		if isSame(n.puzzle, node.puzzle) && n.cost < node.cost {
+		if isSame(n.puzzle, node.puzzle) && n.cost <= node.cost {
 			// fmt.Print("Node is not worth\n")
 			return false
 		}
@@ -262,6 +270,23 @@ func nodeIsWorth(closedList []Node, openList []Node, node Node) bool {
 	return true
 }
 
+func showResolvingPath(node *Node) {
+	currentNode := node
+	nodes := make([]Node, 0)
+
+	for currentNode.parent != nil {
+		nodes = append(nodes, *currentNode)
+		currentNode = currentNode.parent
+	}
+
+	for i := range nodes {
+		fmt.Printf("------STEP %v ------\n\n", i+1)
+		for j := range nodes[len(nodes)-i-1].puzzle {
+			fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
+		}
+	}
+}
+
 func main() {
 	if len(os.Args) == 1 {
 		log.Fatal("No file provided")
@@ -269,53 +294,35 @@ func main() {
 	fileName := os.Args[1]
 
 	lines := parse.LinesFromFile(fileName)
-	fmt.Println("'" + strings.Join(lines, `','`) + `'`)
 	puzzle, puzzleSize := parse.PuzzleFromLines(lines)
 	zeroPosition := ZeroPosition(puzzle)
-	fmt.Printf("Puzzle: %v\n\n", puzzle)
-	fmt.Printf("Zero position: %v\n\n", zeroPosition)
 
 	solvedPuzzle, piecePositions := SolvedPuzzle(puzzleSize)
-	fmt.Printf("Is solved: %v\n", isSame(puzzle, solvedPuzzle))
 
-	fmt.Printf("Solved Puzzle: %v\n\n", solvedPuzzle)
-	fmt.Printf("Heuristic: %v\n\n", Heuristic(solvedPuzzle, piecePositions))
-	fmt.Printf("New Puzzle: %v\n", PotentialZeroPositions(zeroPosition, puzzleSize))
-	fmt.Printf("Old Puzzle: %v\n", puzzle)
-	fmt.Printf("New Puzzle: %v\n", SwapPuzzlePieces(puzzle, zeroPosition, PotentialZeroPositions(zeroPosition, puzzleSize)[0]))
-	fmt.Printf("Old Puzzle: %v\n", puzzle)
-
-	rootNode := Node{
+	rootNode := &Node{
 		puzzle,
-		0, Heuristic(puzzle, piecePositions), Heuristic(puzzle, piecePositions),
+		0, Heuristic("manhattan", puzzle, piecePositions), Heuristic("manhattan", puzzle, piecePositions),
 		zeroPosition,
 		nil,
 	}
 
-	// prettyNode(rootNode)
-
-	// prettyNodes(Neighbors(&rootNode, piecePositions))
-
-	closedList := make([]Node, 0)
-	openList := make([]Node, 1)
+	closedList := make([]*Node, 0)
+	openList := make([]*Node, 1)
 	openList[0] = rootNode
-	var node Node
+	var node *Node
 
 	for len(openList) > 0 {
-		// time.Sleep(1000 * time.Millisecond)
-
 		node, openList = openList[0], openList[1:]
-		// prettyNode(node)
-		fmt.Printf("Len: %v\n", len(openList))
 
 		if isSame(node.puzzle, solvedPuzzle) {
+			showResolvingPath(node)
 			fmt.Println("Puzzle is solved")
-
-			prettyNode(node)
 			return
 		}
+		for _, neighbor := range Neighbors(node, piecePositions) {
+			neighbor.heuristic = Heuristic("manhattan", node.puzzle, piecePositions)
+			neighbor.score = neighbor.cost + neighbor.heuristic
 
-		for _, neighbor := range Neighbors(&node, piecePositions) {
 			if nodeIsWorth(closedList, openList, neighbor) {
 				openList = append(openList, neighbor)
 			}
@@ -329,9 +336,8 @@ func main() {
 			}
 		})
 
-		for _, node := range openList {
-			fmt.Printf("Heuristic: %v, cost: %v\n", node.heuristic, node.cost)
-		}
 		closedList = append(closedList, node)
 	}
+
+	fmt.Printf("Cannot solve puzzle")
 }
