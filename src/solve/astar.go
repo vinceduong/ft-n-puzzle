@@ -2,7 +2,6 @@ package solve
 
 import (
 	"fmt"
-	"sort"
 )
 
 func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
@@ -17,17 +16,17 @@ func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
 	return true
 }
 
-func nodeIsWorth(closedList []*Node, openList []*Node, node *Node) bool {
+func nodeIsWorth(closedList []*Node, openList Queue, node *Node) bool {
 	for _, n := range closedList {
 		if isSame(n.puzzle, node.puzzle) {
 			return false
 		}
 	}
 
-	for _, n := range openList {
-		if isSame(n.puzzle, node.puzzle) && n.cost <= node.cost {
-			return false
-		}
+	similarNode := openList.Contains(node.puzzle)
+
+	if similarNode != nil && similarNode.cost < node.cost  {
+		return false
 	}
 
 	return true
@@ -48,13 +47,19 @@ func Astar(puzzle [][]int) {
 	}
 
 	closedList := make([]*Node, 0)
-	openList := make([]*Node, 1)
-	openList[0] = rootNode
+	openList := Queue{nil, 0}
+	openList.Add(rootNode)
 	var node *Node
 
-	for len(openList) > 0 {
-		node, openList = openList[0], openList[1:]
+	for /*i := 0; i < 10; i++*/ {
 
+//		PrettyQueue(openList)
+		node = openList.Pop()
+//		fmt.Printf("openList = %v\n", openList)
+
+		if node == nil {
+			break
+		}
 		if isSame(node.puzzle, solvedPuzzle) {
 			ShowResolvingPath(node)
 			fmt.Println("Puzzle is solved")
@@ -63,19 +68,15 @@ func Astar(puzzle [][]int) {
 		for _, neighbor := range Neighbors(node, solvedPiecePositions) {
 			neighbor.heuristic = Heuristic("manhattan", node.puzzle, solvedPiecePositions)
 			neighbor.score = neighbor.cost + neighbor.heuristic
+//			fmt.Printf("neighbor = %v\n", neighbor);
+//			fmt.Printf("neighbor heuristic: %v\n", neighbor.heuristic);
+//			fmt.Printf("neighbor score: %v\n", neighbor.score);
 
 			if nodeIsWorth(closedList, openList, neighbor) {
-				openList = append(openList, neighbor)
+//				fmt.Printf("Node is worth!!\n")
+				openList.Add(neighbor)
 			}
 		}
-
-		sort.Slice(openList, func(i, j int) bool {
-			if openList[i].heuristic == openList[j].heuristic {
-				return openList[i].score < openList[j].score
-			} else {
-				return openList[i].heuristic < openList[j].heuristic
-			}
-		})
 
 		closedList = append(closedList, node)
 	}

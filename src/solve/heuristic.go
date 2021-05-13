@@ -1,5 +1,5 @@
 package solve
-
+//import "fmt"
 func Abs(x int) int {
 	if x < 0 {
 		return -x
@@ -40,5 +40,7 @@ func Heuristic(t string, puzzle [][]int, solvedPiecePositions map[int]Position) 
 		}
 	}
 
+//	fmt.Printf("puzzle = %v\n", puzzle)
+//	fmt.Printf("heuristic = %v\n", heuristic)
 	return heuristic
 }
