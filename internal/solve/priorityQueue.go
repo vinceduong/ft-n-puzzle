@@ -1,6 +1,5 @@
 package solve
 
-//import "fmt"
 
 type QueueElement struct {
 	node *Node
@@ -14,18 +13,19 @@ type Queue struct {
 
 func (q *Queue) Add(node *Node) {
 	q.size++
+
 	if q.head == nil {
 		q.head = &QueueElement{
-			node,
-			nil,
+			node: node,
+			next: nil,
 		}
 		return
 	}
 
 	if (node.score < q.head.node.score) {
 		q.head = &QueueElement{
-			node,
-			q.head,
+			node: node,
+			next: q.head,
 		}
 		return
 	}
@@ -35,8 +35,8 @@ func (q *Queue) Add(node *Node) {
 	for current.next != nil {
 		if (node.score < current.next.node.score) {
 			newElement := &QueueElement{
-				node,
-				current.next,
+				node: node,
+				next: current.next,
 			}
 
 			current.next = newElement
@@ -54,13 +54,14 @@ func (q *Queue) Add(node *Node) {
 }
 
 func (q *Queue) Pop() *Node {
-	if (q.head == nil) { return nil }
+	if (q.head == nil) {
+		return nil
+	}
+	q.size--
 
 	node := q.head.node
 
 	q.head = q.head.next
-
-	q.size--
 
 	return node
 }
@@ -70,7 +71,6 @@ func (q *Queue) Contains(puzzle [][]int) *Node {
 
 	for current != nil {
 		if isSame(current.node.puzzle, puzzle) {
-//			fmt.Printf("is Same\n")
 			return current.node
 		}
 

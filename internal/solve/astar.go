@@ -25,7 +25,7 @@ func nodeIsWorth(closedList []*Node, openList Queue, node *Node) bool {
 
 	similarNode := openList.Contains(node.puzzle)
 
-	if similarNode != nil && similarNode.cost < node.cost  {
+	if similarNode != nil && similarNode.cost < node.cost {
 		return false
 	}
 
@@ -39,23 +39,25 @@ func Astar(puzzle [][]int) {
 	solvedPuzzle, solvedPiecePositions := SolvedPuzzle(puzzleSize)
 
 	rootNode := &Node{
-		puzzle,
-		0, Heuristic("manhattan", puzzle, solvedPiecePositions),
-		Heuristic("manhattan", puzzle, solvedPiecePositions),
-		zeroPosition,
-		nil,
+		puzzle:       puzzle,
+		cost:         0,
+		heuristic:    Heuristic("manhattan", puzzle, solvedPiecePositions),
+		score:        Heuristic("manhattan", puzzle, solvedPiecePositions),
+		zeroPosition: zeroPosition,
+		parent:       nil,
 	}
+
+	//openMap := make(map[string]*Node)
+	//closedMap := make(map[string]*Node)
 
 	closedList := make([]*Node, 0)
 	openList := Queue{nil, 0}
 	openList.Add(rootNode)
 	var node *Node
 
-	for /*i := 0; i < 10; i++*/ {
+	for {
 
-//		PrettyQueue(openList)
 		node = openList.Pop()
-//		fmt.Printf("openList = %v\n", openList)
 
 		if node == nil {
 			break
@@ -65,15 +67,11 @@ func Astar(puzzle [][]int) {
 			fmt.Println("Puzzle is solved")
 			return
 		}
-		for _, neighbor := range Neighbors(node, solvedPiecePositions) {
+		for _, neighbor := range Neighbors(node) {
 			neighbor.heuristic = Heuristic("manhattan", node.puzzle, solvedPiecePositions)
 			neighbor.score = neighbor.cost + neighbor.heuristic
-//			fmt.Printf("neighbor = %v\n", neighbor);
-//			fmt.Printf("neighbor heuristic: %v\n", neighbor.heuristic);
-//			fmt.Printf("neighbor score: %v\n", neighbor.score);
 
 			if nodeIsWorth(closedList, openList, neighbor) {
-//				fmt.Printf("Node is worth!!\n")
 				openList.Add(neighbor)
 			}
 		}
