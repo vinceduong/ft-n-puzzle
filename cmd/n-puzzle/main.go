@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/vinceduong/n-puzzle/src/parse"
-	"github.com/vinceduong/n-puzzle/src/solve"
+	"github.com/vinceduong/n-puzzle/internal/parse"
+	"github.com/vinceduong/n-puzzle/internal/solve"
 )
 
 func main() {

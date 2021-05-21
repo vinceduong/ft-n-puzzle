@@ -1,6 +1,6 @@
 package solve
 
-import "fmt"
+//import "fmt"
 
 type QueueElement struct {
 	node *Node
@@ -70,7 +70,7 @@ func (q *Queue) Contains(puzzle [][]int) *Node {
 
 	for current != nil {
 		if isSame(current.node.puzzle, puzzle) {
-			fmt.Printf("is Same\n")
+//			fmt.Printf("is Same\n")
 			return current.node
 		}
 
