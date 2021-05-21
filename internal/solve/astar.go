@@ -2,7 +2,6 @@ package solve
 
 import (
 	"fmt"
-	"sort"
 )
 
 func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
@@ -17,17 +16,17 @@ func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
 	return true
 }
 
-func nodeIsWorth(closedList []*Node, openList []*Node, node *Node) bool {
+func nodeIsWorth(closedList []*Node, openList Queue, node *Node) bool {
 	for _, n := range closedList {
 		if isSame(n.puzzle, node.puzzle) {
 			return false
 		}
 	}
 
-	for _, n := range openList {
-		if isSame(n.puzzle, node.puzzle) && n.cost <= node.cost {
-			return false
-		}
+	similarNode := openList.Contains(node.puzzle)
+
+	if similarNode != nil && similarNode.cost < node.cost {
+		return false
 	}
 
 	return true
@@ -40,42 +39,42 @@ func Astar(puzzle [][]int) {
 	solvedPuzzle, solvedPiecePositions := SolvedPuzzle(puzzleSize)
 
 	rootNode := &Node{
-		puzzle,
-		0, Heuristic("manhattan", puzzle, solvedPiecePositions),
-		Heuristic("manhattan", puzzle, solvedPiecePositions),
-		zeroPosition,
-		nil,
+		puzzle:       puzzle,
+		cost:         0,
+		heuristic:    Heuristic("manhattan", puzzle, solvedPiecePositions),
+		score:        Heuristic("manhattan", puzzle, solvedPiecePositions),
+		zeroPosition: zeroPosition,
+		parent:       nil,
 	}
 
+	//openMap := make(map[string]*Node)
+	//closedMap := make(map[string]*Node)
+
 	closedList := make([]*Node, 0)
-	openList := make([]*Node, 1)
-	openList[0] = rootNode
+	openList := Queue{nil, 0}
+	openList.Add(rootNode)
 	var node *Node
 
-	for len(openList) > 0 {
-		node, openList = openList[0], openList[1:]
+	for {
 
+		node = openList.Pop()
+
+		if node == nil {
+			break
+		}
 		if isSame(node.puzzle, solvedPuzzle) {
 			ShowResolvingPath(node)
 			fmt.Println("Puzzle is solved")
 			return
 		}
-		for _, neighbor := range Neighbors(node, solvedPiecePositions) {
+		for _, neighbor := range Neighbors(node) {
 			neighbor.heuristic = Heuristic("manhattan", node.puzzle, solvedPiecePositions)
 			neighbor.score = neighbor.cost + neighbor.heuristic
 
 			if nodeIsWorth(closedList, openList, neighbor) {
-				openList = append(openList, neighbor)
+				openList.Add(neighbor)
 			}
 		}
-
-		sort.Slice(openList, func(i, j int) bool {
-			if openList[i].heuristic == openList[j].heuristic {
-				return openList[i].score < openList[j].score
-			} else {
-				return openList[i].heuristic < openList[j].heuristic
-			}
-		})
 
 		closedList = append(closedList, node)
 	}

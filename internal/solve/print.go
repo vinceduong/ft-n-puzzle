@@ -11,6 +11,7 @@ func PrettyNode(node *Node) {
 
 	fmt.Printf("Node cost: %v\n", node.cost)
 	fmt.Printf("Node heuristic: %v\n", node.heuristic)
+	fmt.Printf("Node score: %v\n", node.score)
 	fmt.Printf("Node parent: %v\n", node.parent)
 	fmt.Printf("-------------------------------------\n")
 }
@@ -36,4 +37,20 @@ func ShowResolvingPath(node *Node) {
 			fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
 		}
 	}
+}
+
+func PrettyQueue(q Queue) {
+	current := q.head
+
+	fmt.Printf("---- Printing Queue ----\n")
+	fmt.Printf("Queue info = %v\n", q)
+	i := 0
+	for current != nil {
+		fmt.Printf("Node number %v\n", i)
+		PrettyNode(current.node)
+		current = current.next
+		i++
+	}
+
+	fmt.Printf("---- End of Queue ----\n")
 }

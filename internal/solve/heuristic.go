@@ -35,7 +35,6 @@ func Heuristic(t string, puzzle [][]int, solvedPiecePositions map[int]Position) 
 	for i := range puzzle {
 		for j, pieceNumber := range puzzle[i] {
 			distance := function(i, j, solvedPiecePositions[pieceNumber])
-			// distance := isMissPlaced(i, j, solvedPiecePositions[pieceNumber])
 			heuristic += distance
 		}
 	}
