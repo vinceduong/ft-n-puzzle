@@ -2,6 +2,14 @@ package solve
 
 import "fmt"
 
+func PrettyPuzzle(puzzle [][]int) {
+	fmt.Printf("Puzzle: \n")
+
+	for i := range puzzle {
+		fmt.Printf("%v\n", puzzle[i])
+	}
+}
+
 func PrettyNode(node *Node) {
 	fmt.Printf("Node puzzle: \n")
 
