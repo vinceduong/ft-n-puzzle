@@ -22,19 +22,21 @@ func PrettyNodes(nodes []*Node) {
 	}
 }
 
-func ShowResolvingPath(node *Node) {
-	currentNode := node
-	nodes := make([]Node, 0)
-
-	for currentNode.parent != nil {
-		nodes = append(nodes, *currentNode)
-		currentNode = currentNode.parent
-	}
-
+func PrettyResolvingPath(nodes []*Node) {
+	fmt.Printf("Moves: \n")
 	for i := range nodes {
-		fmt.Printf("------STEP %v ------\n\n", i+1)
-		for j := range nodes[len(nodes)-i-1].puzzle {
-			fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
+		if i == 0 {
+			fmt.Printf("Initial state: \n")
+			for j := range nodes[len(nodes)-i-1].puzzle {
+				fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
+			}
+		} else {
+			fmt.Printf("------MOVE %v ------\n", i+1)
+			for j := range nodes[len(nodes)-i-1].puzzle {
+				fmt.Printf("%v", nodes[len(nodes)-i-1].puzzle[j])
+				fmt.Printf("------>")
+				fmt.Printf("%v\n", nodes[len(nodes)-i].puzzle[j])
+			}
 		}
 	}
 }

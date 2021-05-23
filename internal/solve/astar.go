@@ -2,6 +2,8 @@ package solve
 
 import (
 	"fmt"
+
+	"github.com/fatih/color"
 )
 
 func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
@@ -32,6 +34,18 @@ func nodeIsWorth(closedList []*Node, openList Queue, node *Node) bool {
 	return true
 }
 
+func ResolvingPath(node *Node) []*Node {
+	currentNode := node
+	nodes := make([]*Node, 0)
+
+	for currentNode.parent != nil {
+		nodes = append(nodes, currentNode)
+		currentNode = currentNode.parent
+	}
+
+	return nodes
+}
+
 func Astar(puzzle [][]int) {
 	puzzleSize := len(puzzle)
 	zeroPosition := ZeroPosition(puzzle)
@@ -47,6 +61,9 @@ func Astar(puzzle [][]int) {
 		parent:       nil,
 	}
 
+	//Stats variables
+	selectedStatesCounter := 0
+	maximumOpenStates := 0
 	//openMap := make(map[string]*Node)
 	//closedMap := make(map[string]*Node)
 
@@ -56,17 +73,31 @@ func Astar(puzzle [][]int) {
 	var node *Node
 
 	for {
-
 		node = openList.Pop()
+
+		selectedStatesCounter++
+		if openList.size > maximumOpenStates {
+			maximumOpenStates = openList.size
+		}
 
 		if node == nil {
 			break
 		}
+
 		if isSame(node.puzzle, solvedPuzzle) {
-			ShowResolvingPath(node)
-			fmt.Println("Puzzle is solved")
+			path := ResolvingPath(node)
+			color.Set(color.FgGreen)
+			PrettyResolvingPath(path)
+			color.Unset()
+			color.Set(color.FgRed)
+			fmt.Printf("\nStatistics:\n")
+			fmt.Printf("Number of moves:\t\t %v\n", len(path))
+			fmt.Printf("Number of states browsed:\t %v\n", selectedStatesCounter)
+			fmt.Printf("Maximum number of open states:\t %v\n", maximumOpenStates)
+			color.Unset()
 			return
 		}
+
 		for _, neighbor := range Neighbors(node) {
 			neighbor.heuristic = Heuristic("manhattan", node.puzzle, solvedPiecePositions)
 			neighbor.score = neighbor.cost + neighbor.heuristic

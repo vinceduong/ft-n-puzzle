@@ -18,7 +18,7 @@ func isMissPlaced(row int, column int, pos Position) int {
 	return 0
 }
 
-func Heuristic(t string, puzzle [][]int, solvedPiecePositions map[int]Position) int {
+func Heuristic(t string, puzzle [][]int, solved map[int]Position) int {
 	heuristic := 0
 
 	var function func(row int, column int, pos Position) int
@@ -34,7 +34,7 @@ func Heuristic(t string, puzzle [][]int, solvedPiecePositions map[int]Position) 
 
 	for i := range puzzle {
 		for j, pieceNumber := range puzzle[i] {
-			distance := function(i, j, solvedPiecePositions[pieceNumber])
+			distance := function(i, j, solved[pieceNumber])
 			heuristic += distance
 		}
 	}
