@@ -20,7 +20,6 @@ func SolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 	)
 
 	piecePositions := make(map[int]Position)
-
 	for pieceNumber <= numberOfPieces {
 		if pieceNumber != numberOfPieces {
 			puzzle[row][column] = pieceNumber
@@ -30,7 +29,6 @@ func SolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 			puzzle[row][column] = 0
 			piecePositions[0] = Position{row, column}
 			pieceNumber++
-
 			continue
 		}
 
@@ -66,4 +64,5 @@ func SolvedPuzzle(puzzleSize int) ([][]int, map[int]Position) {
 	}
 
 	return puzzle, piecePositions
+
 }

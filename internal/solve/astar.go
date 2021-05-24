@@ -50,7 +50,15 @@ func Astar(puzzle [][]int) {
 	puzzleSize := len(puzzle)
 	zeroPosition := ZeroPosition(puzzle)
 
+	PrettyPuzzle(puzzle)
 	solvedPuzzle, solvedPiecePositions := SolvedPuzzle(puzzleSize)
+	PrettyPuzzle(solvedPuzzle)
+	if !Solvable(puzzle, solvedPuzzle) {
+		color.Set(color.FgRed)
+		fmt.Printf("Puzzle is not solvable\n")
+		color.Unset()
+		return
+	}
 
 	rootNode := &Node{
 		puzzle:       puzzle,
@@ -64,8 +72,6 @@ func Astar(puzzle [][]int) {
 	//Stats variables
 	selectedStatesCounter := 0
 	maximumOpenStates := 0
-	//openMap := make(map[string]*Node)
-	//closedMap := make(map[string]*Node)
 
 	closedList := make([]*Node, 0)
 	openList := Queue{nil, 0}
