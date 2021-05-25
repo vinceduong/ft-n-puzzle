@@ -22,7 +22,7 @@ func (q *Queue) Add(node *Node) {
 		return
 	}
 
-	if (node.score < q.head.node.score) {
+	if (node.heuristic < q.head.node.heuristic) {
 		q.head = &QueueElement{
 			node: node,
 			next: q.head,
@@ -33,7 +33,7 @@ func (q *Queue) Add(node *Node) {
 	current := q.head
 
 	for current.next != nil {
-		if (node.score < current.next.node.score) {
+		if (node.heuristic < current.next.node.heuristic) {
 			newElement := &QueueElement{
 				node: node,
 				next: current.next,
@@ -65,18 +65,3 @@ func (q *Queue) Pop() *Node {
 
 	return node
 }
-
-func (q *Queue) Contains(puzzle [][]int) *Node {
-	current := q.head
-
-	for current != nil {
-		if isSame(current.node.puzzle, puzzle) {
-			return current.node
-		}
-
-		current = current.next
-	}
-
-	return nil
-}
-

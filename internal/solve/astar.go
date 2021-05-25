@@ -18,17 +18,13 @@ func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
 	return true
 }
 
-func nodeIsWorth(closedList []*Node, openList Queue, node *Node) bool {
-	for _, n := range closedList {
-		if isSame(n.puzzle, node.puzzle) {
-			return false
-		}
+func nodeIsWorth(closedMap map[string]*Node, openMap map[string]*Node, node *Node) bool {
+	if found, exists := closedMap[node.puzzleString]; exists {
+		return node.score < found.score
 	}
 
-	similarNode := openList.Contains(node.puzzle)
-
-	if similarNode != nil && similarNode.cost < node.cost {
-		return false
+	if found, exists := openMap[node.puzzleString]; exists {
+		return found.cost < node.cost
 	}
 
 	return true
@@ -62,6 +58,7 @@ func Astar(puzzle [][]int) {
 
 	rootNode := &Node{
 		puzzle:       puzzle,
+		puzzleString: PuzzleToString(puzzle),
 		cost:         0,
 		heuristic:    Heuristic("manhattan", puzzle, solvedPiecePositions),
 		score:        Heuristic("manhattan", puzzle, solvedPiecePositions),
@@ -73,15 +70,26 @@ func Astar(puzzle [][]int) {
 	selectedStatesCounter := 0
 	maximumOpenStates := 0
 
-	closedList := make([]*Node, 0)
+	fmt.Printf("puzzleString: %v\n", PuzzleToString(puzzle))
+	//openList hashmap
+	openMap := make(map[string]*Node)
+	closedMap := make(map[string]*Node)
+
 	openList := Queue{nil, 0}
+	openMap[rootNode.puzzleString] = rootNode
 	openList.Add(rootNode)
 	var node *Node
 
 	for {
 		node = openList.Pop()
-
+		delete(openMap,node.puzzleString)
 		selectedStatesCounter++
+
+		//fmt.Printf("selectedStatesCounter: %v\n", selectedStatesCounter)	
+		//fmt.Printf("maximumOpenStates: %v\n", maximumOpenStates)
+		//fmt.Printf("node score: %v, node heuristic: %v\n", node.score, node.heuristic)
+
+
 		if openList.size > maximumOpenStates {
 			maximumOpenStates = openList.size
 		}
@@ -108,12 +116,13 @@ func Astar(puzzle [][]int) {
 			neighbor.heuristic = Heuristic("manhattan", node.puzzle, solvedPiecePositions)
 			neighbor.score = neighbor.cost + neighbor.heuristic
 
-			if nodeIsWorth(closedList, openList, neighbor) {
+			if nodeIsWorth(closedMap, openMap, neighbor) {
 				openList.Add(neighbor)
+				openMap[neighbor.puzzleString] = neighbor
 			}
 		}
 
-		closedList = append(closedList, node)
+		closedMap[node.puzzleString] = node
 	}
 
 	fmt.Printf("Cannot solve puzzle")

@@ -41,9 +41,9 @@ func PrettyResolvingPath(nodes []*Node) {
 		} else {
 			fmt.Printf("------MOVE %v ------\n", i+1)
 			for j := range nodes[len(nodes)-i-1].puzzle {
-				fmt.Printf("%v", nodes[len(nodes)-i-1].puzzle[j])
+				fmt.Printf("%v", nodes[len(nodes)-i].puzzle[j])
 				fmt.Printf("------>")
-				fmt.Printf("%v\n", nodes[len(nodes)-i].puzzle[j])
+				fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
 			}
 		}
 	}

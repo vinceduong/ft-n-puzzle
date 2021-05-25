@@ -77,6 +77,7 @@ func Neighbors(n *Node) []*Node {
 
     neighbors[i] = &Node{
       puzzle: newPuzzle,
+			puzzleString: PuzzleToString(newPuzzle),
       cost: cost,
       heuristic: 0,
       score: 0,
