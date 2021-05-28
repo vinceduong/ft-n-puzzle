@@ -1,6 +1,9 @@
 package solve
 
-import "fmt"
+import(
+	"fmt"
+	"strings"
+)
 
 func PrettyPuzzle(puzzle [][]int) {
 	fmt.Printf("Puzzle: \n")
@@ -31,21 +34,59 @@ func PrettyNodes(nodes []*Node) {
 }
 
 func PrettyResolvingPath(nodes []*Node) {
-	fmt.Printf("Moves: \n")
+	puzzleSize := len(nodes[0].puzzle)
+	maxPiece := puzzleSize * puzzleSize - 1
+
+	maxPiecePadding := 0
+	for maxPiece > 0 {
+		maxPiece /= 10
+		maxPiecePadding++
+	}
+
+	moves := len(nodes)
+	moveNumberPadding := 0
+	for moves > 0 {
+		moves /= 10
+		moveNumberPadding++
+	}
+
+	const arrow = "-----> "
+	const move = "MOVE"
+	const space = "  "
+
+	lineSize := 2 * puzzleSize * (maxPiecePadding + 1) + len(arrow) - 1
+	headerSpaceSize := lineSize - len(space) - len(move) - len(space) -  moveNumberPadding
+	headerSize := headerSpaceSize / 2
+	moveNumberPadding += headerSpaceSize % 2
+
+	header := strings.Repeat("-", headerSize)
+	footer := strings.Repeat("-", lineSize)
+
 	for i := range nodes {
 		if i == 0 {
-			fmt.Printf("Initial state: \n")
-			for j := range nodes[len(nodes)-i-1].puzzle {
-				fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
-			}
+			continue
 		} else {
-			fmt.Printf("------MOVE %v ------\n", i+1)
+			fmt.Printf("%v" + "%v" + "%v" + "%*d" + "%v" + "%v\n",
+				header,
+				space,
+				move,
+				moveNumberPadding,
+				i,
+				space,
+				header,
+			)
 			for j := range nodes[len(nodes)-i-1].puzzle {
-				fmt.Printf("%v", nodes[len(nodes)-i].puzzle[j])
-				fmt.Printf("------>")
-				fmt.Printf("%v\n", nodes[len(nodes)-i-1].puzzle[j])
+				for k := range nodes[len(nodes)-i-1].puzzle[j] {
+					fmt.Printf("%*d ", maxPiecePadding,nodes[len(nodes)-i].puzzle[j][k])
+				}
+				fmt.Printf(arrow)
+				for k := range nodes[len(nodes)-i-1].puzzle[j] {
+					fmt.Printf("%*d ", maxPiecePadding,nodes[len(nodes)-i-1].puzzle[j][k])
+				}
+				fmt.Printf("\n")
 			}
 		}
+		fmt.Printf(footer + "\n")
 	}
 }
 

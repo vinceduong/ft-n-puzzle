@@ -20,7 +20,7 @@ func isSame(puzzle1 [][]int, puzzle2 [][]int) bool {
 
 func nodeIsWorth(closedMap map[string]*Node, openMap map[string]*Node, node *Node) bool {
 	if found, exists := closedMap[node.puzzleString]; exists {
-		return node.score < found.score
+		return node.cost < found.cost
 	}
 
 	if found, exists := openMap[node.puzzleString]; exists {
@@ -46,9 +46,7 @@ func Astar(puzzle [][]int) {
 	puzzleSize := len(puzzle)
 	zeroPosition := ZeroPosition(puzzle)
 
-	PrettyPuzzle(puzzle)
 	solvedPuzzle, solvedPiecePositions := SolvedPuzzle(puzzleSize)
-	PrettyPuzzle(solvedPuzzle)
 	if !Solvable(puzzle, solvedPuzzle) {
 		color.Set(color.FgRed)
 		fmt.Printf("Puzzle is not solvable\n")
@@ -70,7 +68,6 @@ func Astar(puzzle [][]int) {
 	selectedStatesCounter := 0
 	maximumOpenStates := 0
 
-	fmt.Printf("puzzleString: %v\n", PuzzleToString(puzzle))
 	//openList hashmap
 	openMap := make(map[string]*Node)
 	closedMap := make(map[string]*Node)
@@ -84,11 +81,6 @@ func Astar(puzzle [][]int) {
 		node = openList.Pop()
 		delete(openMap,node.puzzleString)
 		selectedStatesCounter++
-
-		//fmt.Printf("selectedStatesCounter: %v\n", selectedStatesCounter)	
-		//fmt.Printf("maximumOpenStates: %v\n", maximumOpenStates)
-		//fmt.Printf("node score: %v, node heuristic: %v\n", node.score, node.heuristic)
-
 
 		if openList.size > maximumOpenStates {
 			maximumOpenStates = openList.size
