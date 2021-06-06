@@ -63,9 +63,7 @@ func PrettyResolvingPath(nodes []*Node) {
 	footer := strings.Repeat("-", lineSize)
 
 	for i := range nodes {
-		if i == 0 {
-			continue
-		} else {
+			if i == 0 { continue }
 			fmt.Printf("%v" + "%v" + "%v" + "%*d" + "%v" + "%v\n",
 				header,
 				space,
@@ -87,7 +85,6 @@ func PrettyResolvingPath(nodes []*Node) {
 			}
 		}
 		fmt.Printf(footer + "\n")
-	}
 }
 
 func PrettyQueue(q Queue) {

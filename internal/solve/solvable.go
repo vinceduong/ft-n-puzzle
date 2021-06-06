@@ -1,5 +1,5 @@
 package solve
-import "fmt"
+
 func Solvable(puzzle, solvedPuzzle [][]int) bool {
 	inversions, blankPieceRow := Inversions(puzzle, solvedPuzzle)
 	/*

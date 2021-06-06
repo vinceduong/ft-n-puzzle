@@ -97,7 +97,7 @@ func Astar(puzzle [][]int) {
 			color.Unset()
 			color.Set(color.FgRed)
 			fmt.Printf("\nStatistics:\n")
-			fmt.Printf("Number of moves:\t\t %v\n", len(path))
+			fmt.Printf("Number of moves:\t\t %v\n", len(path) - 1)
 			fmt.Printf("Number of states browsed:\t %v\n", selectedStatesCounter)
 			fmt.Printf("Maximum number of open states:\t %v\n", maximumOpenStates)
 			color.Unset()
