@@ -58,8 +58,8 @@ func Astar(puzzle [][]int) {
 		puzzle:       puzzle,
 		puzzleString: PuzzleToString(puzzle),
 		cost:         0,
-		heuristic:    Heuristic("manhattan", puzzle, solvedPiecePositions),
-		score:        Heuristic("manhattan", puzzle, solvedPiecePositions),
+		heuristic:    Heuristic(puzzle, solvedPiecePositions),
+		score:        Heuristic(puzzle, solvedPiecePositions),
 		zeroPosition: zeroPosition,
 		parent:       nil,
 	}
@@ -105,7 +105,7 @@ func Astar(puzzle [][]int) {
 		}
 
 		for _, neighbor := range Neighbors(node) {
-			neighbor.heuristic = Heuristic("manhattan", node.puzzle, solvedPiecePositions)
+			neighbor.heuristic = Heuristic(node.puzzle, solvedPiecePositions)
 			neighbor.score = neighbor.cost + neighbor.heuristic
 
 			if nodeIsWorth(closedMap, openMap, neighbor) {
