@@ -1,14 +1,13 @@
 package solve
-
+import "fmt"
 func Solvable(puzzle, solvedPuzzle [][]int) bool {
 	inversions, blankPieceRow := Inversions(puzzle, solvedPuzzle)
-
 	/*
 		If the puzzle size is even, puzzle instance is solvable if
 	  the blank is on an even row counting from the bottom (second-last, fourth-last, etc.)
 		and number of inversions is odd.
 	*/
-	if len(puzzle)%2 == 0 && ((len(puzzle)-1)-blankPieceRow)%2 == 0 {
+	if len(puzzle)%2 == 0 && blankPieceRow%2 == 0 {
 		return inversions%2 != 0
 	}
 	/*

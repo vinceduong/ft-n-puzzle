@@ -1,3 +1,5 @@
 n-puzzle
 tags
 go.sum
+*.swp
+*.swo
